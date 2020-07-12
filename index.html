@@ -1,411 +1,628 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="angularjs-starter">
-    <head>
-        <title>NURBS demo - WebGL based online evaluator for NURBS Curves</title>
 
-        <style>
-        div.feature {
-          width: 30%;
-          padding: 10px;
-          border: 5px solid gray;
-          margin: 0px;
-        }
-        div.main {
-          padding: 10px;
-          margin: 2px;
-        }
-        div.progress {
-        }
-        input[type="number"] {
-                width:70px;
-            }
+<head>
+  <title>NURBS demo - WebGL based online evaluator for NURBS Curves</title>
 
-        #footer {
-          clear: both;
-          color: #666;  
-          margin: 0 auto 10px auto; 
-          width: 850px;
-          padding: 5px 0;
-          text-align: center;
-          background: #F8F7F7;
-          border-top: 1px solid #F2F2F2;  
-        }
+  <style>
+    div.feature {
+      width: 30%;
+      padding: 10px;
+      border: 5px solid gray;
+      margin: 0px;
+    }
 
-        .bordered {
-          max-width:400px;
-          border: 2px solid #ff0000;
-        }
-        </style>
+    div.main {
+      padding: 10px;
+      margin: 2px;
+    }
 
-    <!--<script src="/downloded/jquery.min.js"></script>
+    div.progress {}
+
+    input[type="number"] {
+      width: 70px;
+    }
+
+    #footer {
+      clear: both;
+      color: #666;
+      margin: 0 auto 10px auto;
+      width: 850px;
+      padding: 5px 0;
+      text-align: center;
+      background: #F8F7F7;
+      border-top: 1px solid #F2F2F2;
+    }
+
+    .bordered {
+      max-width: 400px;
+      border: 2px solid #ff0000;
+    }
+  </style>
+
+  <!--<script src="/downloded/jquery.min.js"></script>
     <script src="/downloded/angular.min.js"></script>
     <script data-require="ui-bootstrap@0.5.0" data-semver="0.5.0" src="/downloded/ui-bootstrap-tpls.min.js"></script> 
     <link data-require="bootstrap-css@*" data-semver="3.0.0" rel="stylesheet" href="/downloded/bootstrap.min.css" />
     <script src="downloded/three.min.js"></script>   
     <script src="/downloded/bootstrap.min.js"></script>-->
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>    
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.min.js"></script>
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r74/three.min.js"></script>  
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script> 
-    
-        <script src="./scripts/TrackballControls.js"></script>
-        <script src="./scripts/Detector.js"></script>
-        <!--<script src="/scripts/angular_fields_EvalPts_o.js"></script> -->
-        <script src="./scripts/angular_fields_o.js"></script>
-        
-        <script src="./scripts/ga.js"></script>
-        <script>
-          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-          })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.min.js"></script>
+  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r74/three.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
-          ga('create', 'UA-77355367-1', 'auto');
-          ga('send', 'pageview');
-        </script>
+  <script src="./scripts/TrackballControls.js"></script>
+  <script src="./scripts/Detector.js"></script>
+  <!--<script src="/scripts/angular_fields_EvalPts_o.js"></script> -->
+  <script src="./scripts/angular_fields_o.js"></script>
 
-    </head>
-    <body ng-controller="MainCtrl">
+  <script src="./scripts/ga.js"></script>
+  <script>
+    (function (i, s, o, g, r, a, m) {
+    i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+      (i[r].q = i[r].q || []).push(arguments)
+    }, i[r].l = 1 * new Date(); a = s.createElement(o),
+      m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
-      <nav class="navbar navbar-inverse" role="navigation">
-     
-      <div class="navbar-header">
+    ga('create', 'UA-77355367-1', 'auto');
+    ga('send', 'pageview');
+  </script>
 
-        <button type="button" class="navbar-toggle" ng-init="navCollapsed = true" ng-click="navCollapsed = !navCollapsed">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="#">NURBS Demo - Evaluator for Non Uniform Rational B-Splines</a>
-      </div>
-     
-      <div class="collapse navbar-collapse" ng-class="!navCollapsed && 'in'" ng-click="navCollapsed=true">
-      </div>
-      </nav>         
+</head>
 
-      <div id="top1" style="margin: 2%;">
-   <!--      <h4 style="color:#FF7C00;" ><em>On a very popular demand, NURBS calculator is back in its original form. I have one humble request if you guys are using it, then please provide me your support, by clicking on like button on the social platform.  </em> </h4> -->
-   <div style="text-align: center">
-    <h4 style="color:#4169E1;display: inline-block" ><em>Thank you for your interest in NURBS calculator. This is a free app, but if you like it, then bye me a coffee.</em> </h4>
-            <br>
+<body ng-controller="MainCtrl">
 
-   <style>.bmc-button img{width: 27px !important;margin-bottom: 1px !important;box-shadow: none !important;border: none !important;vertical-align: middle !important;}.bmc-button{line-height: 36px !important;height:37px !important;text-decoration: none !important;display:inline-flex !important;color:#FFFFFF !important;background-color:#FF813F !important;border-radius: 3px !important;border: 1px solid transparent !important;padding: 1px 9px !important;font-size: 22px !important;letter-spacing: 0.6px !important;box-shadow: 0px 1px 2px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5) !important;margin: 0 auto !important;font-family:'Cookie', cursive !important;-webkit-box-sizing: border-box !important;box-sizing: border-box !important;-o-transition: 0.3s all linear !important;-webkit-transition: 0.3s all linear !important;-moz-transition: 0.3s all linear !important;-ms-transition: 0.3s all linear !important;transition: 0.3s all linear !important;}.bmc-button:hover, .bmc-button:active, .bmc-button:focus {-webkit-box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5) !important;text-decoration: none !important;box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5) !important;opacity: 0.85 !important;color:#FFFFFF !important;}</style><link href="https://fonts.googleapis.com/css?family=Cookie" rel="stylesheet"><a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/h9G5sLw6R"><img src="https://www.buymeacoffee.com/assets/img/BMC-btn-logo.svg" alt="Buy me a coffee"><span style="margin-left:5px">Buy me a coffee</span></a>
+  <nav class="navbar navbar-inverse" role="navigation">
+
+    <div class="navbar-header">
+
+      <button type="button" class="navbar-toggle" ng-init="navCollapsed = true" ng-click="navCollapsed = !navCollapsed">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">NURBS Demo - Evaluator for Non Uniform Rational B-Splines</a>
     </div>
 
-        <hr>
-        <p>This WebGL based NURBS application will help you to understand the NURBS curves in a practical and intuitive way. You can also create your own curves and download it, as a text file. You can start with some predefined curves by clicking on one of the images and create new curves, by adding, deleting or modifying the curve parameters. Click <a href="#details">here</a> for more information.</p>
-        <ul>
-          <li> <b> This website requires webGL enabled browsers, preferably Chrome. </b> If you are using a browser other than Chrome, then <a href="http://get.webgl.org/">check if webGL is enabled</a>.</li>
-        </ul>
-      </div>
+    <div class="collapse navbar-collapse" ng-class="!navCollapsed && 'in'" ng-click="navCollapsed=true">
+    </div>
+  </nav>
 
-      <div class="main">  
+  <div id="top1" style="margin: 2%;">
+    <!--      <h4 style="color:#FF7C00;" ><em>On a very popular demand, NURBS calculator is back in its original form. I have one humble request if you guys are using it, then please provide me your support, by clicking on like button on the social platform.  </em> </h4> -->
+    <div style="text-align: center">
+      <h4 style="color:#4169E1;display: inline-block"><em>Thank you so much for using the NURBS calculator. I'm glad that my app is helping many CAD engineers and students around the world. It has successfully completed 4 years and it has more than 1000 active users, every month.
+        </em> </h4>
+      <br>
 
-        <div style="float: right;">
-          <div id="modelViewer" popover="This is the WebGL window, where the curve is rendered. Click and drag any of the control point (shown in green color), to modify the curve." popover-trigger="mouseenter"></div>
 
-          <div id="container">
-      
-            <label popover="Click and drag a control point in the webGL window to modify its position" popover-trigger="mouseenter" popover-placement="right">
-            <input type="radio" ng-model="cPtMethod.name" value="modify">
-              Modify control point position
-            </label><br/>
-            <label popover="Click in the webGL window to add a new control point at that position" popover-trigger="mouseenter" popover-placement="right">
-              <input ng-disabled="isBezier()" type="radio" ng-model="cPtMethod.name" value="add">
-              Add new control point
-            </label><br/>
-            <p ng-show="isAdding()">Please select a plane, by clicking one of the buttons - ‘XY Plane’, ‘YZ Plane’ or ‘ZX Plane’. </p>
-            <label popover="Click on a control point in the webGL window to remove it" popover-trigger="mouseenter" popover-placement="right">
-              <input ng-disabled="isBezier()" type="radio" ng-model="cPtMethod.name" value="remove">
-              Remove control point
-            </label><br/>
-            <!--<tt>color = {{cPtMethod.name | json}}</tt><br/> -->
+    </div>
+    <div style="text-align: center">
+      <h4 style="color:rgb(225, 116, 65);display: inline-block; line-height: 25px; ">
+        I'm available to contribute to your next groundbreaking software development project. I have 12+ years of expertise in CG (computer graphics) software development with strong skills in mathematics and computational geometry. Recently I have acquired new skills like Flutter(Dart), firebase, angular, react, etc for full-stack mobile/web app development. Please contact me on my email id <a href="mailto:pawangami@gmail.com">pawangami@gmail.com</a> or refer me.
+      </h4>
+      <br>
+      <h5>To know more about me, <a href="https://www.linkedin.com/in/pawangami/">Visit my linkedin profile</a>.</h5>
 
-            <button ng-click="ZoomToFit()">ZoomToFit</button>
-            <button popover="Front View" popover-trigger="mouseenter" popover-placement="bottom" ng-click="XYPlane()">XY Plane</button>
-            <button popover="Side View" popover-trigger="mouseenter" popover-placement="bottom" ng-click="YZPlane()">YZ Plane</button>
-            <button popover="Top View" popover-trigger="mouseenter" popover-placement="bottom" ng-click="ZXPlane()">ZX Plane</button>
-            <br/>
+    </div>
+    <div style="text-align: center">
+      <!-- <h4 style="color:#4169E1;display: inline-block"><em>Thank you for your interest in NURBS calculator. This is a
+          free app, but if you like it, then bye me a coffee.</em> </h4> -->
+      <br>
 
-            <br/>
-            <div id="sliderU">
-              <input type="range" min="{{uMin}}" max="{{uMax}}" step="{{step}}" ng-model="sliderVal" ng-change="updateSlider()"> 
-              <button class="btn btn-sm btn-primary btn-circle" popover="If you want to know the value of point on the curve, corresponding to a u parameter, then drag this slider, the u parameter and corresponding point will be displayed below." popover-trigger="mouseenter" popover-placement="right">?</button>
-              <br/>
-              <b>Enter u value between {{uMin}} and {{uMax}} </b>:  <input  type="number" ng-model="sliderVal" ng-change="updateSlider()" step="{{step}}"/> 
-              <br/> 
-                u : {{sliderVal}}   , <b>Evaluated Point </b> : {{evalPointText}} 
+      <style>
+        .bmc-button img {
+          width: 27px !important;
+          margin-bottom: 1px !important;
+          box-shadow: none !important;
+          border: none !important;
+          vertical-align: middle !important;
+        }
 
-            </div>
-            <br/>
+        .bmc-button {
+          line-height: 36px !important;
+          height: 37px !important;
+          text-decoration: none !important;
+          display: inline-flex !important;
+          color: #FFFFFF !important;
+          background-color: #FF813F !important;
+          border-radius: 3px !important;
+          border: 1px solid transparent !important;
+          padding: 1px 9px !important;
+          font-size: 22px !important;
+          letter-spacing: 0.6px !important;
+          box-shadow: 0px 1px 2px rgba(190, 190, 190, 0.5) !important;
+          -webkit-box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5) !important;
+          margin: 0 auto !important;
+          font-family: 'Cookie', cursive !important;
+          -webkit-box-sizing: border-box !important;
+          box-sizing: border-box !important;
+          -o-transition: 0.3s all linear !important;
+          -webkit-transition: 0.3s all linear !important;
+          -moz-transition: 0.3s all linear !important;
+          -ms-transition: 0.3s all linear !important;
+          transition: 0.3s all linear !important;
+        }
 
-            <div id="readWriteNURBS">        
-             <output popover="You can download the data for the NURBS curve as a text file, using this link" popover-trigger="mouseenter" popover-placement="left"></output>
-             <!-- <button class="btn btn-sm btn-primary btn-circle" popover="You can download the data for the NURBS curve as a text file, using this link" popover-trigger="mouseenter" popover-placement="right">?</button>
+        .bmc-button:hover,
+        .bmc-button:active,
+        .bmc-button:focus {
+          -webkit-box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5) !important;
+          text-decoration: none !important;
+          box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5) !important;
+          opacity: 0.85 !important;
+          color: #FFFFFF !important;
+        }
+      </style>
+      <link href="https://fonts.googleapis.com/css?family=Cookie" rel="stylesheet"><a class="bmc-button" target="_blank"
+        href="https://www.buymeacoffee.com/h9G5sLw6R"><img
+          src="https://www.buymeacoffee.com/assets/img/BMC-btn-logo.svg" alt="Buy me a coffee"><span
+          style="margin-left:5px">Buy me a coffee</span></a>
+    </div>
+
+    <hr>
+    <p>This WebGL based NURBS application will help you to understand the NURBS curves in a practical and intuitive way.
+      You can also create your own curves and download it, as a text file. You can start with some predefined curves by
+      clicking on one of the images and create new curves, by adding, deleting or modifying the curve parameters. Click
+      <a href="#details">here</a> for more information.</p>
+    <ul>
+      <li> <b> This website requires webGL enabled browsers, preferably Chrome. </b> If you are using a browser other
+        than Chrome, then <a href="http://get.webgl.org/">check if webGL is enabled</a>.</li>
+    </ul>
+  </div>
+
+  <div class="main">
+
+    <div style="float: right;">
+      <div id="modelViewer"
+        popover="This is the WebGL window, where the curve is rendered. Click and drag any of the control point (shown in green color), to modify the curve."
+        popover-trigger="mouseenter"></div>
+
+      <div id="container">
+
+        <label popover="Click and drag a control point in the webGL window to modify its position"
+          popover-trigger="mouseenter" popover-placement="right">
+          <input type="radio" ng-model="cPtMethod.name" value="modify">
+          Modify control point position
+        </label><br />
+        <label popover="Click in the webGL window to add a new control point at that position"
+          popover-trigger="mouseenter" popover-placement="right">
+          <input ng-disabled="isBezier()" type="radio" ng-model="cPtMethod.name" value="add">
+          Add new control point
+        </label><br />
+        <p ng-show="isAdding()">Please select a plane, by clicking one of the buttons - ‘XY Plane’, ‘YZ Plane’ or ‘ZX
+          Plane’. </p>
+        <label popover="Click on a control point in the webGL window to remove it" popover-trigger="mouseenter"
+          popover-placement="right">
+          <input ng-disabled="isBezier()" type="radio" ng-model="cPtMethod.name" value="remove">
+          Remove control point
+        </label><br />
+        <!--<tt>color = {{cPtMethod.name | json}}</tt><br/> -->
+
+        <button ng-click="ZoomToFit()">ZoomToFit</button>
+        <button popover="Front View" popover-trigger="mouseenter" popover-placement="bottom" ng-click="XYPlane()">XY
+          Plane</button>
+        <button popover="Side View" popover-trigger="mouseenter" popover-placement="bottom" ng-click="YZPlane()">YZ
+          Plane</button>
+        <button popover="Top View" popover-trigger="mouseenter" popover-placement="bottom" ng-click="ZXPlane()">ZX
+          Plane</button>
+        <br />
+
+        <br />
+        <div id="sliderU">
+          <input type="range" min="{{uMin}}" max="{{uMax}}" step="{{step}}" ng-model="sliderVal"
+            ng-change="updateSlider()">
+          <button class="btn btn-sm btn-primary btn-circle"
+            popover="If you want to know the value of point on the curve, corresponding to a u parameter, then drag this slider, the u parameter and corresponding point will be displayed below."
+            popover-trigger="mouseenter" popover-placement="right">?</button>
+          <br />
+          <b>Enter u value between {{uMin}} and {{uMax}} </b>: <input type="number" ng-model="sliderVal"
+            ng-change="updateSlider()" step="{{step}}" />
+          <br />
+          u : {{sliderVal}} , <b>Evaluated Point </b> : {{evalPointText}}
+
+        </div>
+        <br />
+
+        <div id="readWriteNURBS">
+          <output popover="You can download the data for the NURBS curve as a text file, using this link"
+            popover-trigger="mouseenter" popover-placement="left"></output>
+          <!-- <button class="btn btn-sm btn-primary btn-circle" popover="You can download the data for the NURBS curve as a text file, using this link" popover-trigger="mouseenter" popover-placement="right">?</button>
              <br/> -->
-             <br/>
-             <b>Upload NURBS data </b>: <button class="btn btn-sm btn-primary btn-circle" popover="If you want to render a previously saved curve, then click on the below button and select the text file." popover-trigger="mouseenter" popover-placement="right">?</button>
-             <input type="file" id="fileinput" /> 
-            </div>
-            <br/>
+          <br />
+          <b>Upload NURBS data </b>: <button class="btn btn-sm btn-primary btn-circle"
+            popover="If you want to render a previously saved curve, then click on the below button and select the text file."
+            popover-trigger="mouseenter" popover-placement="right">?</button>
+          <input type="file" id="fileinput" />
+        </div>
+        <br />
 
-            <div ng-hide="true" id="uploadNURBS">
-                    <input ng-show="isLoggedIn" type="text" ng-model="modelFileName" />
-                     <button ng-disabled="!isLoggedIn" ng-click="save()">Upload Model</button>
-                    <span ng-show="!isLoggedIn">Please login to save the model on the server</span>
+        <div ng-hide="true" id="uploadNURBS">
+          <input ng-show="isLoggedIn" type="text" ng-model="modelFileName" />
+          <button ng-disabled="!isLoggedIn" ng-click="save()">Upload Model</button>
+          <span ng-show="!isLoggedIn">Please login to save the model on the server</span>
 
-                    <span ng-show="isFileExists()">File name already exists. The previous model will be deleted</span>
-                    <div ng-show="selected">Selection from a modal: {{ selected }}</div>
-            </div>
-            <br/> 
-          </div>
+          <span ng-show="isFileExists()">File name already exists. The previous model will be deleted</span>
+          <div ng-show="selected">Selection from a modal: {{ selected }}</div>
+        </div>
+        <br />
+      </div>
+    </div>
+
+    <div style="width: 50%;">
+      <img id="splineImg" style="width: 120px; height: 100px; cursor: pointer; cursor:hand" alt="spline"
+        src="./images/spline.png" ng-click="getFields('spline', '')" popover="Spline" popover-trigger="mouseenter">
+      <img id="circleImg" style="width: 120px; height: 100px; cursor: pointer; cursor:hand" alt="circle"
+        src="./images/circle.png" ng-click="getFields('circle', '')" popover="Circle" popover-trigger="mouseenter">
+      <img id="helixImg" style="width: 120px; height: 100px; cursor: pointer; cursor:hand" alt="helix"
+        src="./images/helix.png" ng-click="getFields('helix', '')" popover="Helix" popover-trigger="mouseenter">
+      <img id="heartImg" style="width: 120px; height: 100px; cursor: pointer; cursor:hand" alt="heart"
+        src="./images/heart.png" ng-click="getFields('heart', '')" popover="heart" popover-trigger="mouseenter">
+    </div>
+
+    <div ng-show="isRendering()" style="position:absolute; top: 50%; left: 10% " class="col-sm-4">
+      <progressbar class="progress-striped active" value="100" type="success">Rendering</progressbar>
+    </div>
+
+    <div id="infileds">
+      <br />
+      <b>Select the type of the curve</b><select ng-init="curveTypeSel = curveTypes[0]"
+        ng-options="curveType as curveType.name for curveType in curveTypes " ng-model="curveTypeSel"
+        ng-change="changeCurveType()"></select>
+      <p ng-show="isBezier()">For Bezier curves the total number of control points are exactly equal to order of the
+        curve, so to add/remove control points increase/decrease the degree. Bezier curves are always clamped. </p>
+      <br /><br />
+      <div>
+        <b>Degree : </b> <input type="number" ng-model=" viewJSN1.value2.value " ng-change="updateDegree()" />
+        <button class="btn btn-sm btn-primary btn-circle"
+          popover="Degree of the curve. It is an integer. It cannot be >= number of control point. So if you try to increase the degree of curve, then control point will automatically be added"
+          popover-trigger="mouseenter" popover-placement="right">?</button>
+      </div>
+      <br />
+
+      <div>
+        <b> Control Points : </b> x, y, z, w
+        <button class="btn btn-sm btn-primary btn-circle"
+          popover="Controls the shape of the curve. Each point is defined by 4 values - x, y and z determines the position of control point and w is the weight. You can add as many control points as you want."
+          popover-trigger="mouseenter" popover-placement="right">?</button>
+        <!-- <button class="btn btn-default" ng-click="isCPtsCollapsed = !isCPtsCollapsed">Toggle collapse</button> -->
+        <div id="cpt{{$index}}" collapse="isCPtsCollapsed" ng-repeat="(k, v) in viewJSN2">
+          {{k}} :
+          <input type="number" ng-model=" v.X " ng-change="update()" step="0.1" />
+          <input type="number" ng-model=" v.Y " ng-change="update()" step="0.1" />
+          <input type="number" ng-model=" v.Z " ng-change="update()" step="0.1" />
+          <input type="number" ng-model=" v.W " ng-change="update()" step="0.1" ng-readonly="!isRational" />
+        </div>
+        <br />
+        <button type="button" ng-click="add()" ng-disabled="isBezier()">Add</button>
+        <button type="button" ng-click="remove()" ng-disabled="isBezier()">Remove </button>
+      </div>
+      <br />
+
+      <div>
+        <b>Knots : </b>
+        <button class="btn btn-sm btn-primary btn-circle"
+          popover="The number of knots is dependent of number of control points and degree. The relation is defined by -> number of knots = number of control points + degree + 1."
+          popover-trigger="mouseenter" popover-placement="right">?</button>
+        <!--<button class="btn btn-default" ng-click="isKnotsCollapsed = !isKnotsCollapsed">Toggle collapse</button> -->
+        <div>
+          <input ng-disabled="isBezier()" type="checkbox" ng-model="clampedStart" ng-Change="clampStartChanged()" />
+          Clamped at start
+          <button class="btn btn-sm btn-primary btn-circle"
+            popover="If you want that the curve should touch the first control point, then check this option. It will set the first degree+1 knots to 0 and the knots will be read only."
+            popover-trigger="mouseenter" popover-placement="right">?</button>
+
+          <input ng-disabled="isBezier()" type="checkbox" ng-model="clampedEnd" ng-Change="clampEndChanged()" /> Clamped
+          at end
+          <button class="btn btn-sm btn-primary btn-circle"
+            popover="If you want that the curve should touch the last control point, then check this option, it will set the last degree+1 knots to 1 and the knots will be read only."
+            popover-trigger="mouseenter" popover-placement="right">?</button>
         </div>
 
-          <div style="width: 50%;">
-            <img id="splineImg" style="width: 120px; height: 100px; cursor: pointer; cursor:hand" alt="spline"
-                                    src="./images/spline.png" ng-click="getFields('spline', '')" popover="Spline" popover-trigger="mouseenter">
-            <img id="circleImg" style="width: 120px; height: 100px; cursor: pointer; cursor:hand" alt="circle"
-                                    src="./images/circle.png" ng-click="getFields('circle', '')" popover="Circle" popover-trigger="mouseenter">
-            <img id="helixImg" style="width: 120px; height: 100px; cursor: pointer; cursor:hand" alt="helix"
-                                    src="./images/helix.png" ng-click="getFields('helix', '')" popover="Helix" popover-trigger="mouseenter">
-            <img id="heartImg" style="width: 120px; height: 100px; cursor: pointer; cursor:hand" alt="heart"
-                                    src="./images/heart.png" ng-click="getFields('heart', '')" popover="heart" popover-trigger="mouseenter">
-          </div>
-
-          <div ng-show="isRendering()" style="position:absolute; top: 50%; left: 10% "class="col-sm-4">
-            <progressbar class="progress-striped active" value="100" type="success">Rendering</progressbar>
-          </div>
-
-          <div id="infileds" >
-            <br/>
-            <b>Select the type of the curve</b><select ng-init="curveTypeSel = curveTypes[0]" ng-options="curveType as curveType.name for curveType in curveTypes " ng-model="curveTypeSel" ng-change="changeCurveType()"></select>
-            <p ng-show="isBezier()">For Bezier curves the total number of control points are exactly equal to order of the curve, so to add/remove control points increase/decrease the degree. Bezier curves are always clamped. </p>
-            <br/><br/>
-            <div >
-              <b>Degree : </b> <input  type="number" ng-model=" viewJSN1.value2.value " ng-change = "updateDegree()"/>
-              <button class="btn btn-sm btn-primary btn-circle" popover="Degree of the curve. It is an integer. It cannot be >= number of control point. So if you try to increase the degree of curve, then control point will automatically be added" popover-trigger="mouseenter" popover-placement="right">?</button>
-            </div>
-            <br/>
-
-            <div >
-              <b> Control Points : </b> x, y, z, w
-              <button class="btn btn-sm btn-primary btn-circle" popover="Controls the shape of the curve. Each point is defined by 4 values - x, y and z determines the position of control point and w is the weight. You can add as many control points as you want." popover-trigger="mouseenter" popover-placement="right">?</button>
-              <!-- <button class="btn btn-default" ng-click="isCPtsCollapsed = !isCPtsCollapsed">Toggle collapse</button> -->
-              <div id="cpt{{$index}}" collapse="isCPtsCollapsed" ng-repeat="(k, v) in viewJSN2">
-                  {{k}} : 
-                  <input  type="number" ng-model=" v.X " ng-change = "update()" step="0.1"/> 
-                  <input  type="number" ng-model=" v.Y " ng-change = "update()" step="0.1"/> 
-                  <input  type="number" ng-model=" v.Z " ng-change = "update()" step="0.1"/> 
-                  <input  type="number" ng-model=" v.W " ng-change = "update()" step="0.1" ng-readonly="!isRational"/>
-              </div>
-              <br/>
-              <button type="button"  ng-click="add()" ng-disabled="isBezier()">Add</button>
-              <button type="button" ng-click="remove()" ng-disabled="isBezier()">Remove </button>
-            </div>
-            <br/>
-
-            <div>
-              <b>Knots :  </b>
-              <button class="btn btn-sm btn-primary btn-circle" popover="The number of knots is dependent of number of control points and degree. The relation is defined by -> number of knots = number of control points + degree + 1." popover-trigger="mouseenter" popover-placement="right">?</button>
-              <!--<button class="btn btn-default" ng-click="isKnotsCollapsed = !isKnotsCollapsed">Toggle collapse</button> -->
-              <div>
-                <input  ng-disabled="isBezier()" type="checkbox" ng-model="clampedStart" ng-Change="clampStartChanged()"/> Clamped at start
-                <button class="btn btn-sm btn-primary btn-circle" popover="If you want that the curve should touch the first control point, then check this option. It will set the first degree+1 knots to 0 and the knots will be read only." popover-trigger="mouseenter" popover-placement="right">?</button>
-                
-                <input  ng-disabled="isBezier()" type="checkbox" ng-model="clampedEnd" ng-Change="clampEndChanged()"/> Clamped at end
-                <button class="btn btn-sm btn-primary btn-circle" popover="If you want that the curve should touch the last control point, then check this option, it will set the last degree+1 knots to 1 and the knots will be read only." popover-trigger="mouseenter" popover-placement="right">?</button>
-              </div>
-
-              <div collapse="isKnotsCollapsed" ng-repeat="knot in viewKnots">
-                  <input  type="number" ng-readonly="knot.clamped" ng-model="knot.v" ng-change="update()", step="0.01"/>
-              </div>
-            </div>
-
-            <br/>
-            <br/>
-            <button type="button"  ng-click="reset()">Reset</button>
-
-            <div>
-                <input  type="checkbox" ng-model="postImmediately"/> Update Spline Instantly
-            </div>
-
-            <button type="button" ng-disabled="postImmediately" ng-click="postJSON()">Update Spline</button>
-
-            <br/>
-            <br/>
-
-            <b>Number of segments : </b> <input  type="number" ng-model=" viewJSN1.value1.value " ng-change = "update()" max="2000" readonly/> 
-          </div>
-
-          <a href="#top1">Back to top</a>
-          
-      </div>
-      
-      <div style="margin:auto; width: 90%;">
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/-Ej-28AhZ78" frameborder="0" allowfullscreen></iframe>
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/nEx2h8KfpNA" frameborder="0" allowfullscreen></iframe>
+        <div collapse="isKnotsCollapsed" ng-repeat="knot in viewKnots">
+          <input type="number" ng-readonly="knot.clamped" ng-model="knot.v" ng-change="update()" , step="0.01" />
+        </div>
       </div>
 
-      <div id="details" style="margin:auto; width: 70%;">
-        <h2>What is NURBS? </h2>
-        <p>Non Uniform Rational B-Spline is a mathematical model to represent the free form curves and surfaces in computer graphics. It is mostly used in Computer Aided Design (CAD) and creating characters for video games. The mathematics behind NURBS is very vast and complex, but this nurbs-calculator covers only the evaluation part of NURBS curves. And I have tried to make it as simple as possible, so that anyone can understand NURBS without knowing the complex mathematics.</p>
-        <p>Evaluation means finding the coordinates of a point on the curve, corresponding to some parameter. </p>
-        <p>Here's is the short summary of each term of NURBS: </p>
-        <ul>
-          <li>NU - Non-Uniform - The knot vector can be uniform or non-uniform. </li>
-          <li>R - Rational – If the control points have weights other than 1, then it is a rational curve/surface.</li>
-          <li>BS - B-Splines - Defines the mathematical formula for the curve/surface.</li>
-        </ul>
-        <p>Each of these terms is explained in detail <a href="#term">here</a>.</p>
+      <br />
+      <br />
+      <button type="button" ng-click="reset()">Reset</button>
 
-        <a style="font-size:14pt" href="#who" data-toggle="collapse" >Who can use nurbs-calculator?</a>
-        <div id="who" class="panel-collapse collapse">
-          <ul>
-          <li>Students who are learning geometric modelling and computer graphics. They can use it to understand the properties of NURBS curves, by creating some sample curves and modifying the existing curve parameters.</li>
-          <li>CAD engineers, who designs and creates models of machine parts, using some CAD software. They can use nurbs-calculator as a small light-weight tool to understand the spline geometries in their designs.</li>
-          <li>CAD software developers, can use it as a reference to visualize the curve from available NURBS data.</li>
-          <li>Designers, who create characters for video games. They can use it to create some free-form curves.</li>
-          <li>Anyone who is interested in geometric modelling and computer graphics.</li>
-        </ul>
-        </div>
-        <br/>
-        <a style="font-size:14pt" href="#why" data-toggle="collapse" >Why do you need nurbs-calculator?</a>
-        <div id="why" class="panel-collapse collapse">
-        <ul>
-          <li>Splines and freeform curves have a lot of usage in designing of machine part, ship building and gaming industry. There are a lot of CAD softwares in which you can create NURBS curves, like <a href="https://en.wikipedia.org/wiki/Autodesk_Maya">Autodesk Maya</a>, <a href="https://en.wikipedia.org/wiki/Rhinoceros_3D">Rhinoceros 3D</a> and <a href="https://en.wikipedia.org/wiki/SolidWorks">SolidWorks</a> But these softwares require installation on desktop PC’s and consume a lot of computer resources. Also some of these softwares don’t allow users to change all the NURBS parameter. If you just want to work with NURBS curves and looking for a small tool, which gives you full control on all the curve parameters, then nurbs-calculator is for you. You can create new curves and modify the curve parameters from your mobile/ tablet/ laptop browser.</li>
-          <li>If you are not new to NURBS, then you might have read the theory of NURBS from this website - <a href="http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/">http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/</a> . This is a very good course to start, but the problem is that you can’t understand all the properties of NURBS, until you do a practical, by creating some curves and modifying the parameters. To do this either you have to write your own programs or use some commercial CAD softwares, which is a lot of overhead, just to understand the NURBS. In this case nurbs-calculator will be very useful for you.</li>
-        </ul>
-        </div>
-        <br/>
-
-        <a id="term"style="font-size:14pt" href="#what" data-toggle="collapse" >What are the terminologies?</a>
-        <div id="what" class="collapse">
-        <h5>Curve parameters:</h5>
-          <p>A NURBS curve can be created by just 3 parameters – degree, control point and knot vector. The term knot vector is very confusing. Actually it’s just a sequence of some real numbers, in non-decreasing order.<p>
-
-        <h5> Degree and order: </h5>
-        <p>It is the measure of curvature of the curve. A curve with degree 1 is called as linear curve, with degree 2 is called as quadratic and degree 3 is called as cubic. In most of NURBS applications you will find curves of degree 2 and 3, only. The degree of the curve is integer and should be &gt; 0. Order of the curve = degree + 1. </p>
-
-        <h5>Control points:</h5>
-        <p>The control points determine the shape of the curve. Each point is having 4 float values – x position, y position, z position and weight of the control point. The minimum number of control points required to render a NURBS curve is the same as the order of the curve. So you need atleast 4 control points for degree 3 curve.</p>
-
-        <h5>U parameter:</h5> 
-        <p>In mathematics, the equation of a curve can be expressed as a function of an independent variable, called as a parameter. In nurbs-calculator I call this parameter as u parameter. U parameter is used to calculate the coordinates of a point, on the curve, from its parametric equation. Generally it is assumed that u is 0 at the start of the curve and 1 at the end. So at middle of the curve the value of u will be 0.5. Let's assume that there is a line starting at (1,1) and ending at (2,2). Also assume that u=0 at start and u=1 at end. If you are asked to find the coordinates of point, which lies at middle of the line, then in mathematical term you will say that what should be coordinates of point at u=0.5. You can provide this u value to the parametric equation of line and calculate the coordinates at middle point.You can also assume that u=1 at start and u=2 at end or u=10 at start and u=100 at end. It is your assumptions which defines the middle point of the curve, so for 0&lt; u &lt; 1, middle point is at u = 0.5, for 1 &lt; u &lt; 2, middle is at u = 1.5 and for 10 &lt; u &lt; 100 middle is at u=55. </p>
-
-        <h5>Knot vector:</h5> 
-        <p>As mentioned earlier, knot vector is a sequence of some real numbers, in non-decreasing order. This sequence depends on the assumption of u values. If you are assuming that u varies from 0 to 1, then knot vector is sequence of numbers, between 0 and 1. So basically knot values are u values. There is no significance of each knot value separately. It is the sequence, which is important. The total number of knots = number of control points + degree + 1. If degree of the curve is 2 and there are 4 control points, then there will be total 7 knot values. A curve will be called as Non-Uniform, if the sequence of these knot values is non-uniform (e.g 0.0, 0.4, 0.5, 0.6, 0.9, 0.95, 1.0 ) and called as uniform if this sequence is uniform (e.g. 0.0, 0.167, 0.333, 0.5, 0667, 0.833, 1.0).</p>
-
-        <h5>Knot multiplicity:</h5>
-        <p>Multiplicity means repetition of knot values. Multiplicity is a property of knots that refers to the number of control points associated to a knot. On a cubic curve (degree 3), a knot can have a multiplicity of 1, 2, or 3, but not more than 3. Similarily for degree 2 curve the multiplicity can’t be more than 2. If knot values have multiplicity = degree + 1 at the start, then curve will be clamped at start, that means the curve touches the first control point. If the multiplicity &lt; (degree+ 1) at start, then the curve will not touch the first control point and the curve will start at u = k[p], where p=degree. Same is applicable for the end knots.If the multiplicity at the end is &lt; (degree + 1), then the curve will not touch the last control point and curve will end at u=k[m-p], where m = (total number of knots - 1). That means, if knot vector is = {0, 0.111, 0.222, 0.333, 0.445, 0.556, 0.667, 0.778, 0.889, 1.0} for degree 2 curve, then the curve will start from u = 0.2, which is k[2] and end at u=0.778, which is k[7]. If the multiplicity &gt; (degree + 1), then the curve will split in disjoint parts and the control point will be unused.  </p>
-
-        <p>These terminolgies have been explained in simple way and may not represent the exact definition. To understand these terms in details, please visit <a href="http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/">CS3621 Introduction to Computing with Geometry Course Notes</a> or read <a href="http://www.springer.com/gp/book/9783642973857">The NURBS Book</a>. NURBS and its properties are also explained on <a href="https://www.rhino3d.com/nurbs">Rhinoceros - NURBS</a> and <a href="http://www.mactech.com/articles/develop/issue_25/schneider.html">NURB curves - a guide for the uninitiated</a> .</p>
-        </div>
-        <br/>
-        <a style="font-size:14pt" href="#how" data-toggle="collapse">How to use nurbs-calculator?</a>
-        <div id="how" class="collapse">
-        <ul>
-          <li>Move your mouse over any of the help button and it will display the information about that element or move the mouse directly over the element like webGL window.</li>
-          <li>Click on the one the images on the left side and the curve will be rendered in the webGL window at right side.</li>
-          <li>To rotate the curve, click left mouse button in the webGL window and drag. To zoom in/out, scroll mouse wheel. If curve goes out of visible area, then press ‘Zoom to fit’ button, below the webGL window.</li>
-          <li>If you want to view the curve from front, then press XY plane, for side view click YZ plane and for top view click on ZX plane.</li>
-          <li>You can increase or decrease the degree of the curve. Please note that it should be an integer and should be &gt; 0.</li>
-          <li>There are 4 edit boxes for each control point – first is for x value, second for y value, third for z value and last is for weight of the control point. You can add/remove as many control point as you want, but the total number of control points should not be less than order of the curve. To add a control point click on the add button. It will create a control at some random position. You can modify a control point (shown in green color) by selecting and dragging it in the webGL window.</li>
-          <li>Modify control point – This is the default option. Select and drag any of the control points (shown in green color) in the webGL window, to modify its position.</li>
-          <li>Add a control point – Select this option and choose a plane by clicking appropriate button ( i.e.’XY Plane, ‘YZ Plane’ or ‘ZX Plane’ ), then click in webGL window to add a control point at that position. A control point can also be added by clicking on the ‘Add’ button on the left side, but this will add the control point at some random position.</li>
-          <li>Remove a control point – Select this option and click on any of the control point to remove it.</li>
-          <li>Remember to switch back to ‘Modify control point’ option, once you are done with adding/removing the control points, otherwise it will keep on adding/removing.</li>
-          <li>If you want that the curve should touch the first control point, then the checkbox ‘clamped at start’ should be checked. Same is applicable for last control point. If the curve is clamed at start, then the first (degree+1) knots will be read only.</li>
-          <li>To evaluate the point on the curve, move the slider, which is below the webGL window. It will display the u parameter and its corresponding point. You can also enter u parameter value in the edit box.</li>
-          <li>To download the curve data, as a JSON click on ‘Download NURBS data’ and save it as text file.</li>
-          <li>You can change the values of curve parameters in the downloaded JSON and upload it back, by clicking of ‘Choose file’ button below 'Upload NURBS data’.</li>
-        </ul>
-        </div>
-        
-        <br/>
-        <br/>
-
-        <a style="font-size:16pt; color:green" href="#curveTypes" data-toggle="collapse" >Bézier curves, B-Splines and NURBS </a>
-        <div id="curveTypes" class="panel-collapse collapse">
-          <p>NURBS is a generic term and Bézier curves and B-splines are specific cases of NURBS. As mentioned earlier you need only 3 parameters to render  a NURBS curve - degree, control points and knot vector. Putting some restrictions on these 3 parameters can create Bézier curves and B-splines.  </p>
-            <ul>
-              <li><b>Bézier curves:</b></li>
-              <ol type="1">
-                <li>The number of control points in Bézier curves is exactly equal to (degree + 1). That means for degree 2 curve, there will be 3 control points. If we add 1 control point, then the degree will also increase by 1.  This is the main limitation of Bezier curves.  Sometimes we want to add more control point at some portion of the curve (to precisely control the shape of that portion), but if degree is increased, then it will affect the shape of entire curve. </li>
-                <li>Since the number of control points and degree are fixed, so according to the formula –> k = n+p+1, the number of knots will always be 2*(degree+1).</li>
-                <li>It is always clamed at start and end. That means the curve is tangent at the first and last control point. </li>
-                <li>Since it is clamped at start and end, so first degree+1 knot values will be 0 and last degree+1 knot values will be 1. That means the knot vector of Bezier curve doesn’t contains any value other than 0 and 1.</li>
-                <li>It may be a rational curve, means all the control points can have different weights</li>
-              </ol>
-              <li><b>B-Splines:</b></li>
-              <ol type="1">
-                <li>Minimum number of control points = degree + 1. More control points can be added without increasing the degree</li>
-                <li>Knots values can be uniform or non-uniform.</li>
-                <li>Curve may or may not be clamed at end points. That means the curve may or may not touch the end points.</li>
-                <li>It is always irrational, so all the control points should have equal weights, usually 1. </li>
-              </ol>
-              <li><b>NURBS:</b> All the properties are same as b-splines, except that it considers the weight of the control points. So each control point can have different weight. That is why it is called as rational b-splines. </li>
-            </ul>
-          
-        </div>
-
-        <h2>What is WebGL? </h2>
-        <p>WebGL (Web Graphics Library) is a JavaScript API for rendering interactive 3D computer graphics and 2D graphics within any compatible web browser (reference - <a href="https://en.wikipedia.org/wiki/WebGL">wiki - webGL</a>). In nurbs-calculator I have used <a href="http://threejs.org">three.js</a> to render the nurbs curves, so that a curve can be viewed in 3D. Three.js is a cross-browser JavaScript library/API used to create and display animated 3D computer graphics in a web browser (reference - <a href="https://en.wikipedia.org/wiki/Three.js">wiki - three.js</a>). Three.js uses WebGL. </p>
-
-        <h3>Contact Us</h3>
-        <p>Please feel free to contact me at <a href="mailto:pawangami@gmail.com">pawangami@gmail.com</a> if you have any difficulty in using this application. </p>
-
-        <h3>Feedback</h3>
-
-        <textarea style="width : 60%" ng-model="feedbackText.text" class="form-control" rows="4" name="feedbackText" placeholder="Please leave a feedback..."></textarea>
-        <button type="button" ng-click="sendFeedback()">Send</button>
-      </div>
-      <a href="#top1">Back to top</a>
-
-      <h4 style="text-align:center">Share with Friends and help me spread the word</h4>
-      <div id="social-media" style="margin-left: 35%">
-        <a href="https://twitter.com/share" class="twitter-share-button" data-via="nurbscalculator">Tweet</a>
-        
-        <script src="//platform.linkedin.com/in.js" type="text/javascript"> lang: en_US</script>
-        <script type="IN/Share" data-url="http://nurbscalculator.in/" data-counter="right"></script>
-        <div class="fb-like" data-href="http://nurbscalculator.in/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-        <g:plusone></g:plusone>
+      <div>
+        <input type="checkbox" ng-model="postImmediately" /> Update Spline Instantly
       </div>
 
-      <br/>
+      <button type="button" ng-disabled="postImmediately" ng-click="postJSON()">Update Spline</button>
 
-        <!-- <hr> -->
-        <br>
-      <div id="footer">
-        <p>Copyright &copy; 2016 &middot; All Rights Reserved &middot; nurbscalculator.in</p>
-        <p>Please send your comments and feedback to <a href="mailto:pawangami@gmail.com">pawangami@gmail.com</a>.</p>
-        <p>To know more about me,  <a href="https://www.linkedin.com/in/pawangami/">Visit my linkedin profile</a>.</p>
-        <a style="font-size:10pt" href="#disclaimer" data-toggle="collapse" >Website disclaimer</a>
-        <div id="disclaimer" class="collapse" style="font-size:10pt; text-align: left;">
-        <p>The information contained in this website is for general information purposes only. The information is provided by nurbs-calculator and while we endeavour to keep the information up to date and correct, we make no representations or warranties of any kind, express or implied, about the completeness, accuracy, reliability, suitability or availability with respect to the website or the information, products, services, or related graphics contained on the website for any purpose. Any reliance you place on such information is therefore strictly at your own risk. </p>
-        <p>In no event will we be liable for any loss or damage including without limitation, indirect or consequential loss or damage, or any loss or damage whatsoever arising from loss of data or profits arising out of, or in connection with, the use of this website.</p>
-        <p>Through this website you are able to link to other websites which are not under the control of nurbs-calculator. We have no control over the nature, content and availability of those sites. The inclusion of any links does not necessarily imply a recommendation or endorse the views expressed within them.</p>
-        <p>Every effort is made to keep the website up and running smoothly. However, nurbs-calculator takes no responsibility for, and will not be liable for, the website being temporarily unavailable due to technical issues beyond our control.</p>
-        </div>
-      </div>
-      <div ng-hide="true" id="lastModified"></div>
-    </body>
+      <br />
+      <br />
 
-    <div id="fb-root"></div>
-    <script>(function(d, s, id) {
+      <b>Number of segments : </b> <input type="number" ng-model=" viewJSN1.value1.value " ng-change="update()"
+        max="2000" readonly />
+    </div>
+
+    <a href="#top1">Back to top</a>
+
+  </div>
+
+  <div style="margin:auto; width: 90%;">
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/-Ej-28AhZ78" frameborder="0"
+      allowfullscreen></iframe>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/nEx2h8KfpNA" frameborder="0"
+      allowfullscreen></iframe>
+  </div>
+
+  <div id="details" style="margin:auto; width: 70%;">
+    <h2>What is NURBS? </h2>
+    <p>Non Uniform Rational B-Spline is a mathematical model to represent the free form curves and surfaces in computer
+      graphics. It is mostly used in Computer Aided Design (CAD) and creating characters for video games. The
+      mathematics behind NURBS is very vast and complex, but this nurbs-calculator covers only the evaluation part of
+      NURBS curves. And I have tried to make it as simple as possible, so that anyone can understand NURBS without
+      knowing the complex mathematics.</p>
+    <p>Evaluation means finding the coordinates of a point on the curve, corresponding to some parameter. </p>
+    <p>Here's is the short summary of each term of NURBS: </p>
+    <ul>
+      <li>NU - Non-Uniform - The knot vector can be uniform or non-uniform. </li>
+      <li>R - Rational – If the control points have weights other than 1, then it is a rational curve/surface.</li>
+      <li>BS - B-Splines - Defines the mathematical formula for the curve/surface.</li>
+    </ul>
+    <p>Each of these terms is explained in detail <a href="#term">here</a>.</p>
+
+    <a style="font-size:14pt" href="#who" data-toggle="collapse">Who can use nurbs-calculator?</a>
+    <div id="who" class="panel-collapse collapse">
+      <ul>
+        <li>Students who are learning geometric modelling and computer graphics. They can use it to understand the
+          properties of NURBS curves, by creating some sample curves and modifying the existing curve parameters.</li>
+        <li>CAD engineers, who designs and creates models of machine parts, using some CAD software. They can use
+          nurbs-calculator as a small light-weight tool to understand the spline geometries in their designs.</li>
+        <li>CAD software developers, can use it as a reference to visualize the curve from available NURBS data.</li>
+        <li>Designers, who create characters for video games. They can use it to create some free-form curves.</li>
+        <li>Anyone who is interested in geometric modelling and computer graphics.</li>
+      </ul>
+    </div>
+    <br />
+    <a style="font-size:14pt" href="#why" data-toggle="collapse">Why do you need nurbs-calculator?</a>
+    <div id="why" class="panel-collapse collapse">
+      <ul>
+        <li>Splines and freeform curves have a lot of usage in designing of machine part, ship building and gaming
+          industry. There are a lot of CAD softwares in which you can create NURBS curves, like <a
+            href="https://en.wikipedia.org/wiki/Autodesk_Maya">Autodesk Maya</a>, <a
+            href="https://en.wikipedia.org/wiki/Rhinoceros_3D">Rhinoceros 3D</a> and <a
+            href="https://en.wikipedia.org/wiki/SolidWorks">SolidWorks</a> But these softwares require installation on
+          desktop PC’s and consume a lot of computer resources. Also some of these softwares don’t allow users to change
+          all the NURBS parameter. If you just want to work with NURBS curves and looking for a small tool, which gives
+          you full control on all the curve parameters, then nurbs-calculator is for you. You can create new curves and
+          modify the curve parameters from your mobile/ tablet/ laptop browser.</li>
+        <li>If you are not new to NURBS, then you might have read the theory of NURBS from this website - <a
+            href="http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/">http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/</a>
+          . This is a very good course to start, but the problem is that you can’t understand all the properties of
+          NURBS, until you do a practical, by creating some curves and modifying the parameters. To do this either you
+          have to write your own programs or use some commercial CAD softwares, which is a lot of overhead, just to
+          understand the NURBS. In this case nurbs-calculator will be very useful for you.</li>
+      </ul>
+    </div>
+    <br />
+
+    <a id="term" style="font-size:14pt" href="#what" data-toggle="collapse">What are the terminologies?</a>
+    <div id="what" class="collapse">
+      <h5>Curve parameters:</h5>
+      <p>A NURBS curve can be created by just 3 parameters – degree, control point and knot vector. The term knot vector
+        is very confusing. Actually it’s just a sequence of some real numbers, in non-decreasing order.<p>
+
+          <h5> Degree and order: </h5>
+          <p>It is the measure of curvature of the curve. A curve with degree 1 is called as linear curve, with degree 2
+            is called as quadratic and degree 3 is called as cubic. In most of NURBS applications you will find curves
+            of degree 2 and 3, only. The degree of the curve is integer and should be &gt; 0. Order of the curve =
+            degree + 1. </p>
+
+          <h5>Control points:</h5>
+          <p>The control points determine the shape of the curve. Each point is having 4 float values – x position, y
+            position, z position and weight of the control point. The minimum number of control points required to
+            render a NURBS curve is the same as the order of the curve. So you need atleast 4 control points for degree
+            3 curve.</p>
+
+          <h5>U parameter:</h5>
+          <p>In mathematics, the equation of a curve can be expressed as a function of an independent variable, called
+            as a parameter. In nurbs-calculator I call this parameter as u parameter. U parameter is used to calculate
+            the coordinates of a point, on the curve, from its parametric equation. Generally it is assumed that u is 0
+            at the start of the curve and 1 at the end. So at middle of the curve the value of u will be 0.5. Let's
+            assume that there is a line starting at (1,1) and ending at (2,2). Also assume that u=0 at start and u=1 at
+            end. If you are asked to find the coordinates of point, which lies at middle of the line, then in
+            mathematical term you will say that what should be coordinates of point at u=0.5. You can provide this u
+            value to the parametric equation of line and calculate the coordinates at middle point.You can also assume
+            that u=1 at start and u=2 at end or u=10 at start and u=100 at end. It is your assumptions which defines the
+            middle point of the curve, so for 0&lt; u &lt; 1, middle point is at u = 0.5, for 1 &lt; u &lt; 2, middle is
+            at u = 1.5 and for 10 &lt; u &lt; 100 middle is at u=55. </p>
+
+          <h5>Knot vector:</h5>
+          <p>As mentioned earlier, knot vector is a sequence of some real numbers, in non-decreasing order. This
+            sequence depends on the assumption of u values. If you are assuming that u varies from 0 to 1, then knot
+            vector is sequence of numbers, between 0 and 1. So basically knot values are u values. There is no
+            significance of each knot value separately. It is the sequence, which is important. The total number of
+            knots = number of control points + degree + 1. If degree of the curve is 2 and there are 4 control points,
+            then there will be total 7 knot values. A curve will be called as Non-Uniform, if the sequence of these knot
+            values is non-uniform (e.g 0.0, 0.4, 0.5, 0.6, 0.9, 0.95, 1.0 ) and called as uniform if this sequence is
+            uniform (e.g. 0.0, 0.167, 0.333, 0.5, 0667, 0.833, 1.0).</p>
+
+          <h5>Knot multiplicity:</h5>
+          <p>Multiplicity means repetition of knot values. Multiplicity is a property of knots that refers to the number
+            of control points associated to a knot. On a cubic curve (degree 3), a knot can have a multiplicity of 1, 2,
+            or 3, but not more than 3. Similarily for degree 2 curve the multiplicity can’t be more than 2. If knot
+            values have multiplicity = degree + 1 at the start, then curve will be clamped at start, that means the
+            curve touches the first control point. If the multiplicity &lt; (degree+ 1) at start, then the curve will
+            not touch the first control point and the curve will start at u = k[p], where p=degree. Same is applicable
+            for the end knots.If the multiplicity at the end is &lt; (degree + 1), then the curve will not touch the
+            last control point and curve will end at u=k[m-p], where m = (total number of knots - 1). That means, if
+            knot vector is = {0, 0.111, 0.222, 0.333, 0.445, 0.556, 0.667, 0.778, 0.889, 1.0} for degree 2 curve, then
+            the curve will start from u = 0.2, which is k[2] and end at u=0.778, which is k[7]. If the multiplicity &gt;
+            (degree + 1), then the curve will split in disjoint parts and the control point will be unused. </p>
+
+          <p>These terminolgies have been explained in simple way and may not represent the exact definition. To
+            understand these terms in details, please visit <a
+              href="http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/">CS3621 Introduction to Computing with Geometry
+              Course Notes</a> or read <a href="http://www.springer.com/gp/book/9783642973857">The NURBS Book</a>. NURBS
+            and its properties are also explained on <a href="https://www.rhino3d.com/nurbs">Rhinoceros - NURBS</a> and
+            <a href="http://www.mactech.com/articles/develop/issue_25/schneider.html">NURB curves - a guide for the
+              uninitiated</a> .</p>
+    </div>
+    <br />
+    <a style="font-size:14pt" href="#how" data-toggle="collapse">How to use nurbs-calculator?</a>
+    <div id="how" class="collapse">
+      <ul>
+        <li>Move your mouse over any of the help button and it will display the information about that element or move
+          the mouse directly over the element like webGL window.</li>
+        <li>Click on the one the images on the left side and the curve will be rendered in the webGL window at right
+          side.</li>
+        <li>To rotate the curve, click left mouse button in the webGL window and drag. To zoom in/out, scroll mouse
+          wheel. If curve goes out of visible area, then press ‘Zoom to fit’ button, below the webGL window.</li>
+        <li>If you want to view the curve from front, then press XY plane, for side view click YZ plane and for top view
+          click on ZX plane.</li>
+        <li>You can increase or decrease the degree of the curve. Please note that it should be an integer and should be
+          &gt; 0.</li>
+        <li>There are 4 edit boxes for each control point – first is for x value, second for y value, third for z value
+          and last is for weight of the control point. You can add/remove as many control point as you want, but the
+          total number of control points should not be less than order of the curve. To add a control point click on the
+          add button. It will create a control at some random position. You can modify a control point (shown in green
+          color) by selecting and dragging it in the webGL window.</li>
+        <li>Modify control point – This is the default option. Select and drag any of the control points (shown in green
+          color) in the webGL window, to modify its position.</li>
+        <li>Add a control point – Select this option and choose a plane by clicking appropriate button ( i.e.’XY Plane,
+          ‘YZ Plane’ or ‘ZX Plane’ ), then click in webGL window to add a control point at that position. A control
+          point can also be added by clicking on the ‘Add’ button on the left side, but this will add the control point
+          at some random position.</li>
+        <li>Remove a control point – Select this option and click on any of the control point to remove it.</li>
+        <li>Remember to switch back to ‘Modify control point’ option, once you are done with adding/removing the control
+          points, otherwise it will keep on adding/removing.</li>
+        <li>If you want that the curve should touch the first control point, then the checkbox ‘clamped at start’ should
+          be checked. Same is applicable for last control point. If the curve is clamed at start, then the first
+          (degree+1) knots will be read only.</li>
+        <li>To evaluate the point on the curve, move the slider, which is below the webGL window. It will display the u
+          parameter and its corresponding point. You can also enter u parameter value in the edit box.</li>
+        <li>To download the curve data, as a JSON click on ‘Download NURBS data’ and save it as text file.</li>
+        <li>You can change the values of curve parameters in the downloaded JSON and upload it back, by clicking of
+          ‘Choose file’ button below 'Upload NURBS data’.</li>
+      </ul>
+    </div>
+
+    <br />
+    <br />
+
+    <a style="font-size:16pt; color:green" href="#curveTypes" data-toggle="collapse">Bézier curves, B-Splines and NURBS
+    </a>
+    <div id="curveTypes" class="panel-collapse collapse">
+      <p>NURBS is a generic term and Bézier curves and B-splines are specific cases of NURBS. As mentioned earlier you
+        need only 3 parameters to render a NURBS curve - degree, control points and knot vector. Putting some
+        restrictions on these 3 parameters can create Bézier curves and B-splines. </p>
+      <ul>
+        <li><b>Bézier curves:</b></li>
+        <ol type="1">
+          <li>The number of control points in Bézier curves is exactly equal to (degree + 1). That means for degree 2
+            curve, there will be 3 control points. If we add 1 control point, then the degree will also increase by 1.
+            This is the main limitation of Bezier curves. Sometimes we want to add more control point at some portion of
+            the curve (to precisely control the shape of that portion), but if degree is increased, then it will affect
+            the shape of entire curve. </li>
+          <li>Since the number of control points and degree are fixed, so according to the formula –> k = n+p+1, the
+            number of knots will always be 2*(degree+1).</li>
+          <li>It is always clamed at start and end. That means the curve is tangent at the first and last control point.
+          </li>
+          <li>Since it is clamped at start and end, so first degree+1 knot values will be 0 and last degree+1 knot
+            values will be 1. That means the knot vector of Bezier curve doesn’t contains any value other than 0 and 1.
+          </li>
+          <li>It may be a rational curve, means all the control points can have different weights</li>
+        </ol>
+        <li><b>B-Splines:</b></li>
+        <ol type="1">
+          <li>Minimum number of control points = degree + 1. More control points can be added without increasing the
+            degree</li>
+          <li>Knots values can be uniform or non-uniform.</li>
+          <li>Curve may or may not be clamed at end points. That means the curve may or may not touch the end points.
+          </li>
+          <li>It is always irrational, so all the control points should have equal weights, usually 1. </li>
+        </ol>
+        <li><b>NURBS:</b> All the properties are same as b-splines, except that it considers the weight of the control
+          points. So each control point can have different weight. That is why it is called as rational b-splines. </li>
+      </ul>
+
+    </div>
+
+    <h2>What is WebGL? </h2>
+    <p>WebGL (Web Graphics Library) is a JavaScript API for rendering interactive 3D computer graphics and 2D graphics
+      within any compatible web browser (reference - <a href="https://en.wikipedia.org/wiki/WebGL">wiki - webGL</a>). In
+      nurbs-calculator I have used <a href="http://threejs.org">three.js</a> to render the nurbs curves, so that a curve
+      can be viewed in 3D. Three.js is a cross-browser JavaScript library/API used to create and display animated 3D
+      computer graphics in a web browser (reference - <a href="https://en.wikipedia.org/wiki/Three.js">wiki -
+        three.js</a>). Three.js uses WebGL. </p>
+
+    <h3>Contact Us</h3>
+    <p>Please feel free to contact me at <a href="mailto:pawangami@gmail.com">pawangami@gmail.com</a> if you have any
+      difficulty in using this application. </p>
+
+    <h3>Feedback</h3>
+
+    <textarea style="width : 60%" ng-model="feedbackText.text" class="form-control" rows="4" name="feedbackText"
+      placeholder="Please leave a feedback..."></textarea>
+    <button type="button" ng-click="sendFeedback()">Send</button>
+  </div>
+  <a href="#top1">Back to top</a>
+
+  <h4 style="text-align:center">Share with Friends and help me spread the word</h4>
+  <div id="social-media" style="margin-left: 35%">
+    <a href="https://twitter.com/share" class="twitter-share-button" data-via="nurbscalculator">Tweet</a>
+
+    <script src="//platform.linkedin.com/in.js" type="text/javascript"> lang: en_US</script>
+    <script type="IN/Share" data-url="http://nurbscalculator.in/" data-counter="right"></script>
+    <div class="fb-like" data-href="http://nurbscalculator.in/" data-layout="button_count" data-action="like"
+      data-show-faces="false" data-share="true"></div>
+    <g:plusone></g:plusone>
+  </div>
+
+  <br />
+
+  <!-- <hr> -->
+  <br>
+  <div id="footer">
+    <p>Copyright &copy; 2016 &middot; All Rights Reserved &middot; nurbscalculator.in</p>
+    <p>Please send your comments and feedback to <a href="mailto:pawangami@gmail.com">pawangami@gmail.com</a>.</p>
+    <p>To know more about me, <a href="https://www.linkedin.com/in/pawangami/">Visit my linkedin profile</a>.</p>
+    <a style="font-size:10pt" href="#disclaimer" data-toggle="collapse">Website disclaimer</a>
+    <div id="disclaimer" class="collapse" style="font-size:10pt; text-align: left;">
+      <p>The information contained in this website is for general information purposes only. The information is provided
+        by nurbs-calculator and while we endeavour to keep the information up to date and correct, we make no
+        representations or warranties of any kind, express or implied, about the completeness, accuracy, reliability,
+        suitability or availability with respect to the website or the information, products, services, or related
+        graphics contained on the website for any purpose. Any reliance you place on such information is therefore
+        strictly at your own risk. </p>
+      <p>In no event will we be liable for any loss or damage including without limitation, indirect or consequential
+        loss or damage, or any loss or damage whatsoever arising from loss of data or profits arising out of, or in
+        connection with, the use of this website.</p>
+      <p>Through this website you are able to link to other websites which are not under the control of
+        nurbs-calculator. We have no control over the nature, content and availability of those sites. The inclusion of
+        any links does not necessarily imply a recommendation or endorse the views expressed within them.</p>
+      <p>Every effort is made to keep the website up and running smoothly. However, nurbs-calculator takes no
+        responsibility for, and will not be liable for, the website being temporarily unavailable due to technical
+        issues beyond our control.</p>
+    </div>
+  </div>
+  <div ng-hide="true" id="lastModified"></div>
+</body>
+
+<div id="fb-root"></div>
+<script>(function (d, s, id) {
       var js, fjs = d.getElementsByTagName(s)[0];
       if (d.getElementById(id)) return;
       js = d.createElement(s); js.id = id;
       js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.6";
       fjs.parentNode.insertBefore(js, fjs);
-      }(document, 'script', 'facebook-jssdk'));
-    </script>
+    }(document, 'script', 'facebook-jssdk'));
+</script>
 
-    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<script>!function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https'; if (!d.getElementById(id)) { js = d.createElement(s); js.id = id; js.src = p + '://platform.twitter.com/widgets.js'; fjs.parentNode.insertBefore(js, fjs); } }(document, 'script', 'twitter-wjs');</script>
 
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
+<script src="https://apis.google.com/js/platform.js" async defer></script>
 
 </html>
