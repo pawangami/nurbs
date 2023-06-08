@@ -59,7 +59,7 @@
   <!--<script src="/scripts/angular_fields_EvalPts_o.js"></script> -->
   <script src="./scripts/angular_fields_o.js"></script>
 
-  <!-- <script src="./scripts/ga.js"></script> 
+  <script src="./scripts/ga.js"></script> 
   <script>
     (function (i, s, o, g, r, a, m) {
     i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
@@ -70,7 +70,7 @@
 
     ga('create', 'UA-77355367-1', 'auto');
     ga('send', 'pageview');
-  </script> -->
+  </script>
 
 </head>
 
@@ -104,7 +104,7 @@
     </div>
     <div style="text-align: center">
       <h4 style="color:rgb(225, 116, 65);display: inline-block; line-height: 25px; ">
-       I have 12+ years of expertise in CG (computer graphics) software development with strong skills in mathematics and computational geometry. Recently I have acquired new skills like Flutter(Dart), firebase, angular, react, etc for full-stack mobile/web app development. Please contact me on my email id <a href="mailto:pawangami@gmail.com">pawangami@gmail.com</a> or refer me.
+       I have 16+ years of expertise in CG (computer graphics) software development with strong skills in mathematics and computational geometry. Recently I have acquired new skills like Flutter(Dart), firebase, angular, react, etc for full-stack mobile/web app development. Please contact me on my email id <a href="mailto:pawangami@gmail.com">pawangami@gmail.com</a> or refer me.
       </h4>
       <br>
       <h5>To know more about me, <a href="https://www.linkedin.com/in/pawangami/">Visit my linkedin profile</a>.</h5>
@@ -180,24 +180,24 @@
 
     <div style="float: right;">
       <div id="modelViewer"
-        popover="This is the WebGL window, where the curve is rendered. Click and drag any of the control point (shown in green color), to modify the curve."
+        uib-popover="This is the WebGL window, where the curve is rendered. Click and drag any of the control point (shown in green color), to modify the curve."
         popover-trigger="mouseenter"></div>
 
       <div id="container">
 
-        <label popover="Click and drag a control point in the webGL window to modify its position"
+        <label uib-popover="Click and drag a control point in the webGL window to modify its position"
           popover-trigger="mouseenter" popover-placement="right">
           <input type="radio" ng-model="cPtMethod.name" value="modify">
           Modify control point position
         </label><br />
-        <label popover="Click in the webGL window to add a new control point at that position"
+        <label uib-popover="Click in the webGL window to add a new control point at that position"
           popover-trigger="mouseenter" popover-placement="right">
           <input ng-disabled="isBezier()" type="radio" ng-model="cPtMethod.name" value="add">
           Add new control point
         </label><br />
         <p ng-show="isAdding()">Please select a plane, by clicking one of the buttons - ‘XY Plane’, ‘YZ Plane’ or ‘ZX
           Plane’. </p>
-        <label popover="Click on a control point in the webGL window to remove it" popover-trigger="mouseenter"
+        <label uib-popover="Click on a control point in the webGL window to remove it" popover-trigger="mouseenter"
           popover-placement="right">
           <input ng-disabled="isBezier()" type="radio" ng-model="cPtMethod.name" value="remove">
           Remove control point
@@ -205,11 +205,11 @@
         <!--<tt>color = {{cPtMethod.name | json}}</tt><br/> -->
 
         <button ng-click="ZoomToFit()">ZoomToFit</button>
-        <button popover="Front View" popover-trigger="mouseenter" popover-placement="bottom" ng-click="XYPlane()">XY
+        <button uib-popover="Front View" popover-trigger="mouseenter" popover-placement="bottom" ng-click="XYPlane()">XY
           Plane</button>
-        <button popover="Side View" popover-trigger="mouseenter" popover-placement="bottom" ng-click="YZPlane()">YZ
+        <button uib-popover="Side View" popover-trigger="mouseenter" popover-placement="bottom" ng-click="YZPlane()">YZ
           Plane</button>
-        <button popover="Top View" popover-trigger="mouseenter" popover-placement="bottom" ng-click="ZXPlane()">ZX
+        <button uib-popover="Top View" popover-trigger="mouseenter" popover-placement="bottom" ng-click="ZXPlane()">ZX
           Plane</button>
         <br />
 
@@ -218,7 +218,7 @@
           <input type="range" min="{{uMin}}" max="{{uMax}}" step="{{step}}" ng-model="sliderVal"
             ng-change="updateSlider()">
           <button class="btn btn-sm btn-primary btn-circle"
-            popover="If you want to know the value of point on the curve, corresponding to a u parameter, then drag this slider, the u parameter and corresponding point will be displayed below."
+          uib-popover="If you want to know the value of point on the curve, corresponding to a u parameter, then drag this slider, the u parameter and corresponding point will be displayed below."
             popover-trigger="mouseenter" popover-placement="right">?</button>
           <br />
           <b>Enter u value between {{uMin}} and {{uMax}} </b>: <input type="number" ng-model="sliderVal"
@@ -230,13 +230,13 @@
         <br />
 
         <div id="readWriteNURBS">
-          <output popover="You can download the data for the NURBS curve as a text file, using this link"
+          <output uib-popover="You can download the data for the NURBS curve as a text file, using this link"
             popover-trigger="mouseenter" popover-placement="left"></output>
           <!-- <button class="btn btn-sm btn-primary btn-circle" popover="You can download the data for the NURBS curve as a text file, using this link" popover-trigger="mouseenter" popover-placement="right">?</button>
              <br/> -->
           <br />
           <b>Upload NURBS data </b>: <button class="btn btn-sm btn-primary btn-circle"
-            popover="If you want to render a previously saved curve, then click on the below button and select the text file."
+            uib-popover="If you want to render a previously saved curve, then click on the below button and select the text file."
             popover-trigger="mouseenter" popover-placement="right">?</button>
           <input type="file" id="fileinput" />
         </div>
