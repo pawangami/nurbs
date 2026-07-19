@@ -1,8 +1,0 @@
-@CHARSET "UTF-8";
-
-#webGlWin {
-position:fixed;
-	top:	auto;
-	right:	10px;
-	border:1px solid red;
-}
